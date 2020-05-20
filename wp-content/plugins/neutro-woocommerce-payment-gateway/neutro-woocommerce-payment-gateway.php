@@ -36,6 +36,7 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
 define('NWPG_ROOT', untrailingslashit(plugin_dir_path(__FILE__)));
 define('NWPG_BASE_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 
+require_once(NWPG_ROOT . '/inc/callback-handler.php');
 require_once(NWPG_ROOT . '/inc/class-neutro-woocommerce-payment-gateway.php');
 
 /**

@@ -28,6 +28,7 @@ function nwpg_init_neutro_payment_gateway() {
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
             $this->instructions = $this->get_option('instructions');
+            $this->api_key = $this->get_option('api_key');
             $this->active_countries = $this->get_option('active_countries');
             $this->active_for_subscription_products = $this->get_option('active_for_subscription_products');
 
@@ -35,6 +36,68 @@ function nwpg_init_neutro_payment_gateway() {
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             // add_action('woocommerce_thankyou_neutro', array($this, 'thankyou_page'));
             // add_action('woocommerce_checkout_create_order', array($this, 'save_order_payment_gateway_details'), 10, 2);
+        }
+
+        /**
+         * Process the payment and return the result.
+         *
+         * @param int $order_id Order ID.
+         * @return array
+         */
+        public function process_payment($order_id) {
+            // $order = wc_get_order($order_id);
+
+            $payment_url = $this->get_payment_url($order_id);
+
+            // success
+            if ($payment_url) {
+                return array(
+                    'result' => 'success',
+                    'redirect' => $payment_url,
+                );
+            }
+
+            return parent::process_payment($order_id);
+        }
+
+        /**
+         * generate a payment url for the order
+         * @param int $order_id
+         *
+         * @return string|null
+         */
+        private function get_payment_url($order_id) {
+            $order = wc_get_order($order_id);
+
+            $nonce = NeutroPG_Callback_Handler::get_order_nonce($order_id);
+
+
+            $post_data = array(
+                'apiKey' => $this->api_key,
+                'amount' => $order->get_total(),
+                'currency' => $order->get_currency(),
+                'userID' => is_user_logged_in() ? get_current_user_id() : '',
+                'transactionDesc' => '',
+                'transactionRef' => $order_id,
+                'callBackSuccess' => add_query_arg(array('neutro_order' => $order_id, 'result' => 'success'), home_url()),
+                'callBackFailed' => add_query_arg(array('neutro_order' => $order_id, 'result' => 'failed'), home_url()),
+                'nonce' => $nonce,
+            );
+
+            $endpoint = 'http://app1.neutro.financial/servlet/preparePayment';
+            $response = wp_remote_post($endpoint, array(
+                'body' => $post_data,
+            ));
+
+            // var_dump($post_data);
+
+            // var_dump($response);
+            // something wrong
+            if (!isset($response['response']) || $response['response']['code'] != 200) {
+                return null;
+            }
+
+            return trim($response['body']);
         }
 
         public function is_available() {
