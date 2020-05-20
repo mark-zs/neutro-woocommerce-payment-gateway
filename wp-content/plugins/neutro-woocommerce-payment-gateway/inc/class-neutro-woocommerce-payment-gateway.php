@@ -40,15 +40,28 @@ function nwpg_init_neutro_payment_gateway() {
         public function is_available() {
             $is_available = parent::is_available();
 
-            // Pay with Neutro will only display if user is in appropriate country
-            if (is_array($this->active_countries) && !empty($this->active_countries)) {
-                $billing_country = sprintf('country:%s', WC()->customer->get_billing_country());
-                if (!in_array($billing_country, $this->active_countries)) {
-                    return false;
+            if (!is_admin()) {
+                // Pay with Neutro will only display if user is in appropriate country
+                if (is_array($this->active_countries) && !empty($this->active_countries)) {
+                    $billing_country = sprintf('country:%s', WC()->customer->get_billing_country());
+                    if (!in_array($billing_country, $this->active_countries)) {
+                        return false;
+                    }
                 }
             }
 
             return $is_available;
+        }
+
+        public function supports($feature) {
+            // subscriptions support
+            if ($feature == 'subscriptions') {
+                if ($this->active_for_subscription_products == 'yes') {
+                    return true;
+                }
+            }
+
+            return parent::supports($feature);
         }
 
         /**
