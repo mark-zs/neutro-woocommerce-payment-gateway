@@ -74,14 +74,15 @@ class NeutroPG_Callback_Handler {
 
         // failed
         if ($status == 'failed') {
-            $order->update_status('failed', $note);
+            // $order->update_status('failed', $note);
             ?>
-            <p>The payment has been failed. Please contact the site administrator for help.</p>
-            <p>Redirecting to home page in 5 seconds...</p>
+            <p>The payment has been failed. Please try again</p>
+            <p>Redirecting to the checkout page in 5 seconds or click
+                <a href="<?php echo $order->get_checkout_payment_url(); ?>">here</a>...</p>
             <script type="text/javascript">
                 (function () {
                     setTimeout(function () {
-                        window.location.href = '<?php echo home_url(); ?>';
+                        window.location.href = '<?php echo $order->get_checkout_payment_url(); ?>';
                     }, 2000);
                 })();
             </script>
