@@ -19,12 +19,13 @@ class NeutroPG_Callback_Handler {
     }
 
     public function neutro_handle_callback() {
-        if (!isset($_GET['neutro_order']) || !isset($_GET['nonce'])) {
+        if (!isset($_GET['neutro_payment']) || !isset($_GET['nonce']) || !isset($_GET['status'])) {
             return;
         }
 
-        $order_id = is_numeric($_GET['neutro_order']) ? intval($_GET['neutro_order']) : 0;
+        $order_id = is_numeric($_GET['merchantTransactionId']) ? intval($_GET['merchantTransactionId']) : 0;
         $nonce = sanitize_text_field($_GET['nonce']);
+        $status = sanitize_text_field($_GET['status']);
 
         $order = wc_get_order($order_id);
 
@@ -40,8 +41,71 @@ class NeutroPG_Callback_Handler {
             return;
         }
 
-        var_dump($_GET);
-        die;
+        $neutroSinglePaymentId = isset($_GET['neutroSinglePaymentId']) ? sanitize_text_field($_GET['neutroSinglePaymentId']) : '';
+        $note = sprintf('neutroSinglePaymentId = %s. ', $neutroSinglePaymentId);
+
+        // save neutro payment id
+        update_post_meta($order_id, '_neutroSinglePaymentId', $neutroSinglePaymentId);
+
+        // successful
+        if ($status == 'executed') {
+            $order->update_status('processing', $note);
+
+            // wp_safe_redirect($order->get_checkout_order_received_url());
+            die;
+        }
+
+        // cancelled
+        if ($status == 'cancelled') {
+            $order->update_status('cancelled', $note);
+            ?>
+            <p>Your order has been cancelled.</p>
+            <p>Redirecting to home page in 5 seconds...</p>
+            <script type="text/javascript">
+                (function () {
+                    setTimeout(function () {
+                        window.location.href = '<?php echo home_url(); ?>';
+                    }, 2000);
+                })();
+            </script>
+            <?php
+            die;
+        }
+
+        // failed
+        if ($status == 'failed') {
+            $order->update_status('failed', $note);
+            ?>
+            <p>The payment has been failed. Please contact the site administrator for help.</p>
+            <p>Redirecting to home page in 5 seconds...</p>
+            <script type="text/javascript">
+                (function () {
+                    setTimeout(function () {
+                        window.location.href = '<?php echo home_url(); ?>';
+                    }, 2000);
+                })();
+            </script>
+            <?php
+            die;
+        }
+
+        // rejected
+        if ($status == 'rejected') {
+            $note = 'Payment rejected. ' . $note;
+            $order->update_status('failed', $note);
+            ?>
+            <p>The payment has been rejected. Please contact the site administrator for help.</p>
+            <p>Redirecting to home page in 5 seconds...</p>
+            <script type="text/javascript">
+                (function () {
+                    setTimeout(function () {
+                        window.location.href = '<?php echo home_url(); ?>';
+                    }, 2000);
+                })();
+            </script>
+            <?php
+            die;
+        }
     }
 
     public static function get_order_nonce($order_id) {

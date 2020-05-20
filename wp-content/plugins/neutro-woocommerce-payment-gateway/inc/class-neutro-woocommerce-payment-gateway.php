@@ -71,7 +71,6 @@ function nwpg_init_neutro_payment_gateway() {
 
             $nonce = NeutroPG_Callback_Handler::get_order_nonce($order_id);
 
-
             $post_data = array(
                 'apiKey' => $this->api_key,
                 'amount' => $order->get_total(),
@@ -79,8 +78,8 @@ function nwpg_init_neutro_payment_gateway() {
                 'userID' => is_user_logged_in() ? get_current_user_id() : '',
                 'transactionDesc' => '',
                 'transactionRef' => $order_id,
-                'callBackSuccess' => add_query_arg(array('neutro_order' => $order_id, 'result' => 'success'), home_url()),
-                'callBackFailed' => add_query_arg(array('neutro_order' => $order_id, 'result' => 'failed'), home_url()),
+                'merchantTransactionId' => $order_id,
+                'callbackUrl' => add_query_arg(array('neutro_payment' => true), home_url()),
                 'nonce' => $nonce,
             );
 
@@ -90,10 +89,9 @@ function nwpg_init_neutro_payment_gateway() {
             ));
 
             // var_dump($post_data);
-
-            // var_dump($response);
             // something wrong
             if (!isset($response['response']) || $response['response']['code'] != 200) {
+                // var_dump($post_data, $response);
                 return null;
             }
 
