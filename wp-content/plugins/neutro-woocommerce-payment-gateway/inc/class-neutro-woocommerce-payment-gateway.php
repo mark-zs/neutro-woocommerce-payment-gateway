@@ -7,7 +7,7 @@ function nwpg_init_neutro_payment_gateway() {
     class WC_Neutro_Payment_Gateway extends WC_Payment_Gateway {
         private $api_key;
         private $instructions;
-        private $active_countries = array();
+        private $active_countries;
         private $active_for_subscription_products;
 
         /**
@@ -40,15 +40,12 @@ function nwpg_init_neutro_payment_gateway() {
         public function is_available() {
             $is_available = parent::is_available();
 
-            // available for all countries
-            if (empty($this->active_countries) || !is_array($this->active_countries)) {
-                return $is_available;
-            }
-
-            // var_dump(WC()->customer->get_billing_country(), $this->active_countries);
-            $billing_country = sprintf('country:%s', WC()->customer->get_billing_country());
-            if (!in_array($billing_country, $this->active_countries)) {
-                return false;
+            // Pay with Neutro will only display if user is in appropriate country
+            if (is_array($this->active_countries) && !empty($this->active_countries)) {
+                $billing_country = sprintf('country:%s', WC()->customer->get_billing_country());
+                if (!in_array($billing_country, $this->active_countries)) {
+                    return false;
+                }
             }
 
             return $is_available;
