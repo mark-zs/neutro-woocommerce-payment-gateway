@@ -7,6 +7,8 @@ function nwpg_init_neutro_payment_gateway() {
     class WC_Neutro_Payment_Gateway extends WC_Payment_Gateway {
         private $api_key;
         private $instructions;
+        private $active_countries = array();
+        private $active_for_subscription_products;
 
         /**
          * Constructor for the gateway.
@@ -26,11 +28,30 @@ function nwpg_init_neutro_payment_gateway() {
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
             $this->instructions = $this->get_option('instructions');
+            $this->active_countries = $this->get_option('active_countries');
+            $this->active_for_subscription_products = $this->get_option('active_for_subscription_products');
 
             // Actions.
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             // add_action('woocommerce_thankyou_neutro', array($this, 'thankyou_page'));
             // add_action('woocommerce_checkout_create_order', array($this, 'save_order_payment_gateway_details'), 10, 2);
+        }
+
+        public function is_available() {
+            $is_available = parent::is_available();
+
+            // available for all countries
+            if (empty($this->active_countries) || !is_array($this->active_countries)) {
+                return $is_available;
+            }
+
+            // var_dump(WC()->customer->get_billing_country(), $this->active_countries);
+            $billing_country = sprintf('country:%s', WC()->customer->get_billing_country());
+            if (!in_array($billing_country, $this->active_countries)) {
+                return false;
+            }
+
+            return $is_available;
         }
 
         /**
@@ -120,20 +141,20 @@ function nwpg_init_neutro_payment_gateway() {
                     <select multiple data-attribute="<?php echo $field_key; ?>" id="<?php echo $field_key; ?>" name="<?php echo $field_key; ?>[]" data-placeholder="Active countries" class="wc-shipping-zone-region-select chosen_select">
                         <?php
                         foreach ($shipping_continents as $continent_code => $continent) {
-                            echo '<option value="continent:' . esc_attr($continent_code) . '"' . wc_selected("continent:$continent_code", $locations) . '>' . esc_html($continent['name']) . '</option>';
+                            // echo '<option value="continent:' . esc_attr($continent_code) . '"' . wc_selected("continent:$continent_code", $locations) . '>' . esc_html($continent['name']) . '</option>';
 
                             $countries = array_intersect(array_keys($allowed_countries), $continent['countries']);
 
                             foreach ($countries as $country_code) {
                                 echo '<option value="country:' . esc_attr($country_code) . '"' . wc_selected("country:$country_code", $locations) . '>' . esc_html('&nbsp;&nbsp; ' . $allowed_countries[$country_code]) . '</option>';
 
-                                $states = WC()->countries->get_states($country_code);
-
-                                if ($states) {
-                                    foreach ($states as $state_code => $state_name) {
-                                        echo '<option value="state:' . esc_attr($country_code . ':' . $state_code) . '"' . wc_selected("state:$country_code:$state_code", $locations) . '>' . esc_html('&nbsp;&nbsp;&nbsp;&nbsp; ' . $state_name . ', ' . $allowed_countries[$country_code]) . '</option>';
-                                    }
-                                }
+//                                $states = WC()->countries->get_states($country_code);
+//
+//                                if ($states) {
+//                                    foreach ($states as $state_code => $state_name) {
+//                                        echo '<option value="state:' . esc_attr($country_code . ':' . $state_code) . '"' . wc_selected("state:$country_code:$state_code", $locations) . '>' . esc_html('&nbsp;&nbsp;&nbsp;&nbsp; ' . $state_name . ', ' . $allowed_countries[$country_code]) . '</option>';
+//                                    }
+//                                }
                             }
                         }
                         ?>
