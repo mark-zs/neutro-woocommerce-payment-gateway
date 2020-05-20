@@ -1,0 +1,40 @@
+# to start
+# docker-compose up -d
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: neutro_woocommerce_payment_gateway
+      WORDPRESS_DB_PASSWORD: 1
+      WORDPRESS_DB_NAME: neutro_woocommerce_payment_gateway
+    volumes:
+      - ./.docker/php-custom.ini:/usr/local/etc/php/conf.d/php-custom.ini
+      - ./:/var/www/html
+
+  # docker exec -i neutro-woocommerce-payment-gateway_db_1 mysql -u neutro_woocommerce_payment_gateway -p1 neutro_woocommerce_payment_gateway < db.sql
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: neutro_woocommerce_payment_gateway
+      MYSQL_USER: neutro_woocommerce_payment_gateway
+      MYSQL_PASSWORD: '1'
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - ./.docker/my_custom.cnf:/opt/bitnami/mariadb/conf/my_custom.cnf:ro
+      - nwpgdb:/var/lib/db
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+volumes:
+  nwpgdb:
