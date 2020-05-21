@@ -39,6 +39,33 @@ function nwpg_init_neutro_payment_gateway() {
         }
 
         /**
+         * verify the order payment
+         * @param int $order_id
+         *
+         * @return bool
+         */
+        public function verify_order_payment($order_id) {
+            $endpoint = 'http://app1.neutro.financial/servlet/paymentStatus';
+            $response = wp_remote_get($endpoint, array(
+                'body' => array(
+                    'apiKey' => $this->api_key,
+                    'neutroSinglePaymentId' => get_post_meta($order_id, '_neutroSinglePaymentId', true),
+                ),
+            ));
+
+            // var_dump($response); die;
+            if (!isset($response['response']) || $response['response']['code'] != 200) {
+                // var_dump($post_data, $response);
+                return null;
+            }
+
+            $response = json_decode($response['body'], true);
+            // var_dump($response); die;
+
+            return $response['status'];
+        }
+
+        /**
          * Process the payment and return the result.
          *
          * @param int $order_id Order ID.
@@ -88,14 +115,22 @@ function nwpg_init_neutro_payment_gateway() {
                 'body' => $post_data,
             ));
 
-            // var_dump($post_data);
+            // var_dump($response); die;
             // something wrong
             if (!isset($response['response']) || $response['response']['code'] != 200) {
                 // var_dump($post_data, $response);
                 return null;
             }
 
-            return trim($response['body']);
+            $response = json_decode($response['body'], true);
+            // var_dump($response); die;
+            $neutroSinglePaymentId = $response['neutroSinglePaymentId'];
+            $startPaymentRedirectUrl = $response['startPaymentRedirectUrl'];
+
+            // link order with neutroSinglePaymentId
+            update_post_meta($order_id, '_neutroSinglePaymentId', $neutroSinglePaymentId);
+
+            return $startPaymentRedirectUrl;
         }
 
         public function is_available() {

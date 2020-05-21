@@ -23,9 +23,9 @@ class NeutroPG_Callback_Handler {
             return;
         }
 
+        // only extract order_id and nonce from the return URL, other fields must be queried from database
         $order_id = is_numeric($_GET['merchantTransactionId']) ? intval($_GET['merchantTransactionId']) : 0;
         $nonce = sanitize_text_field($_GET['nonce']);
-        $status = sanitize_text_field($_GET['status']);
 
         $order = wc_get_order($order_id);
 
@@ -36,22 +36,32 @@ class NeutroPG_Callback_Handler {
 
         $order_nonce = self::get_order_nonce($order_id);
 
-        // the nonce is incorrect
+        // the nonce does not match
         if ($nonce != $order_nonce) {
             return;
         }
 
-        $neutroSinglePaymentId = isset($_GET['neutroSinglePaymentId']) ? sanitize_text_field($_GET['neutroSinglePaymentId']) : '';
-        $note = sprintf('neutroSinglePaymentId = %s. ', $neutroSinglePaymentId);
+        /**
+         * @var WC_Neutro_Payment_Gateway $neutro_pg
+         */
+        $neutro_pg = WC_Payment_Gateways::instance()->get_available_payment_gateways()['neutro'];
 
-        // save neutro payment id
-        update_post_meta($order_id, '_neutroSinglePaymentId', $neutroSinglePaymentId);
+        // verify the order
+        $status = $neutro_pg->verify_order_payment($order_id);
+
+        $accepted_statuses = array('executed', 'cancelled', 'failed', 'rejected');
+        if (!in_array($status, $accepted_statuses)) {
+            return;
+        }
+
+        $neutroSinglePaymentId = get_post_meta($order_id, '_neutroSinglePaymentId', true);
+        $note = sprintf('neutroSinglePaymentId = %s. ', $neutroSinglePaymentId);
 
         // successful
         if ($status == 'executed') {
             $order->update_status('processing', $note);
 
-            // wp_safe_redirect($order->get_checkout_order_received_url());
+            wp_safe_redirect($order->get_checkout_order_received_url());
             die;
         }
 
