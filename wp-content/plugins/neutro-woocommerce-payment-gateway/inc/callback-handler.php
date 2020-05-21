@@ -19,13 +19,13 @@ class NeutroPG_Callback_Handler {
     }
 
     public function neutro_handle_callback() {
-        if (!isset($_GET['neutro_payment']) || !isset($_GET['nonce']) || !isset($_GET['status'])) {
+        if (!isset($_GET['neutro_payment']) || !isset($_GET['status'])) {
             return;
         }
 
         // only extract order_id and nonce from the return URL, other fields must be queried from database
         $order_id = is_numeric($_GET['merchantTransactionId']) ? intval($_GET['merchantTransactionId']) : 0;
-        $nonce = sanitize_text_field($_GET['nonce']);
+        // $nonce = sanitize_text_field($_GET['nonce']);
 
         $order = wc_get_order($order_id);
 
@@ -34,10 +34,17 @@ class NeutroPG_Callback_Handler {
             return;
         }
 
-        $order_nonce = self::get_order_nonce($order_id);
+//        $order_nonce = self::get_order_nonce($order_id);
+//        // the nonce does not match
+//        if ($nonce != $order_nonce) {
+//            return;
+//        }
+        $input_neutroSinglePaymentId = isset($_GET['neutroSinglePaymentId']) ? sanitize_text_field($_GET['neutroSinglePaymentId']) : '';
+        $neutroSinglePaymentId = get_post_meta($order_id, '_neutroSinglePaymentId', true);
 
-        // the nonce does not match
-        if ($nonce != $order_nonce) {
+        // var_dump($input_neutroSinglePaymentId, $neutroSinglePaymentId); die;
+        // $neutroSinglePaymentId does not match
+        if ($input_neutroSinglePaymentId != $neutroSinglePaymentId) {
             return;
         }
 
@@ -51,10 +58,10 @@ class NeutroPG_Callback_Handler {
 
         $accepted_statuses = array('executed', 'cancelled', 'failed', 'rejected');
         if (!in_array($status, $accepted_statuses)) {
+            // var_dump($status); die;
             return;
         }
 
-        $neutroSinglePaymentId = get_post_meta($order_id, '_neutroSinglePaymentId', true);
         $note = sprintf('neutroSinglePaymentId = %s. ', $neutroSinglePaymentId);
 
         // successful

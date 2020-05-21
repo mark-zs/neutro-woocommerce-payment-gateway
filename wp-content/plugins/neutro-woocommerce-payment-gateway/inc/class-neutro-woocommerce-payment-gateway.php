@@ -48,7 +48,7 @@ function nwpg_init_neutro_payment_gateway() {
             $endpoint = 'http://app1.neutro.financial/servlet/paymentStatus';
             $response = wp_remote_get($endpoint, array(
                 'body' => array(
-                    'apiKey' => $this->api_key,
+                    // 'apiKey' => $this->api_key,
                     'neutroSinglePaymentId' => get_post_meta($order_id, '_neutroSinglePaymentId', true),
                 ),
             ));
@@ -96,7 +96,7 @@ function nwpg_init_neutro_payment_gateway() {
         private function get_payment_url($order_id) {
             $order = wc_get_order($order_id);
 
-            $nonce = NeutroPG_Callback_Handler::get_order_nonce($order_id);
+            // $nonce = NeutroPG_Callback_Handler::get_order_nonce($order_id);
 
             $post_data = array(
                 'apiKey' => $this->api_key,
@@ -107,7 +107,7 @@ function nwpg_init_neutro_payment_gateway() {
                 'transactionRef' => $order_id,
                 'merchantTransactionId' => $order_id,
                 'callbackUrl' => add_query_arg(array('neutro_payment' => true), home_url()),
-                'nonce' => $nonce,
+                // 'nonce' => $nonce,
             );
 
             $endpoint = 'http://app1.neutro.financial/servlet/preparePayment';
