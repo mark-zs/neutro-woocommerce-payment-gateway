@@ -223,7 +223,7 @@ function nwpg_init_neutro_payment_gateway() {
                 'active_countries' => array(
                     'title' => 'Active countries',
                     'type' => 'countries_dropdown',
-                    'default' => '',
+                    'default' => array('country:GB'),
                 ),
                 'active_for_subscription_products' => array(
                     'title' => 'Active for subscription products',
