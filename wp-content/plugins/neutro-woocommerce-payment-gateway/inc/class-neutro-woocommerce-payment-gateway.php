@@ -51,6 +51,7 @@ function nwpg_init_neutro_payment_gateway() {
                     // 'apiKey' => $this->api_key,
                     'neutroSinglePaymentId' => get_post_meta($order_id, '_neutroSinglePaymentId', true),
                 ),
+                'timeout' => 15,
             ));
 
             // var_dump($response); die;
