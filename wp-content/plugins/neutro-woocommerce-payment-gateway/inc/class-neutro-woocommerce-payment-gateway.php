@@ -114,7 +114,7 @@ function nwpg_init_neutro_payment_gateway() {
             $endpoint = 'http://app1.neutro.financial/servlet/preparePayment';
             $response = wp_remote_post($endpoint, array(
                 'body' => $post_data,
-                'timeout' => 10
+                'timeout' => 15,
             ));
 
             // var_dump($response); die;
