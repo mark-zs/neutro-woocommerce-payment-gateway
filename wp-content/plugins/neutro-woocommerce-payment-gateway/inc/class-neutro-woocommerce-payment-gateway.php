@@ -175,8 +175,16 @@ function nwpg_init_neutro_payment_gateway() {
          * Output the "payment type" fields in checkout.
          */
         public function payment_fields() {
-            if ($description = $this->get_description()) {
-                echo wpautop(wptexturize($description));
+            // $description = $this->get_description();
+            $total = floatval(WC()->cart->get_cart_contents_total());
+            $tree_plan_count = floor($total / 10);
+            echo wpautop(wptexturize(sprintf('Pay by Neutro and we will plant %s tree%s.', $tree_plan_count, $tree_plan_count > 1 ? 's' : '')));
+//            if ($description) {
+//                echo wpautop(wptexturize($description)); // @codingStandardsIgnoreLine.
+//            }
+
+            if ($this->supports('default_credit_card_form')) {
+                $this->credit_card_form(); // Deprecated, will be removed in a future version.
             }
         }
 
@@ -199,14 +207,14 @@ function nwpg_init_neutro_payment_gateway() {
                     'desc_tip' => true,
                     // 'css' => 'border:none;pointer-events:none',
                 ),
-                'description' => array(
-                    'title' => __('Description', 'woocommerce'),
-                    'type' => 'textarea',
-                    'description' => __('Payment method description that the customer will see on your checkout.', 'woocommerce'),
-                    'default' => $this->method_description,
-                    'desc_tip' => true,
-                    // 'css' => 'border:none;pointer-events:none',
-                ),
+//                'description' => array(
+//                    'title' => __('Description', 'woocommerce'),
+//                    'type' => 'textarea',
+//                    'description' => __('Payment method description that the customer will see on your checkout.', 'woocommerce'),
+//                    'default' => $this->method_description,
+//                    'desc_tip' => true,
+//                    // 'css' => 'border:none;pointer-events:none',
+//                ),
                 'instructions' => array(
                     'title' => __('Instructions', 'woocommerce'),
                     'type' => 'textarea',
