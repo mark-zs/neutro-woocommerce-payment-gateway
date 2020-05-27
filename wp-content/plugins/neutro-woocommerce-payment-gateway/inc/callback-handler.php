@@ -66,7 +66,8 @@ class NeutroPG_Callback_Handler {
 
         // successful
         if ($status == 'executed') {
-            $order->update_status('processing', $note);
+            // $order->update_status('processing', $note);
+            self::maybe_update_order_status($order, 'processing', $note);
 
             wp_safe_redirect($order->get_checkout_order_received_url());
             die;
@@ -74,7 +75,8 @@ class NeutroPG_Callback_Handler {
 
         // cancelled
         if ($status == 'cancelled') {
-            $order->update_status('cancelled', $note);
+            // $order->update_status('cancelled', $note);
+            self::maybe_update_order_status($order, 'cancelled', $note);
             ?>
             <p>Your order has been cancelled.</p>
             <p>Redirecting to home page in 5 seconds...</p>
@@ -110,7 +112,8 @@ class NeutroPG_Callback_Handler {
         // rejected
         if ($status == 'rejected') {
             $note = 'Payment rejected. ' . $note;
-            $order->update_status('failed', $note);
+            // $order->update_status('failed', $note);
+            self::maybe_update_order_status($order, 'failed', $note);
             ?>
             <p>The payment has been rejected. Please contact the site administrator for help.</p>
             <p>Redirecting to home page in 5 seconds...</p>
@@ -124,6 +127,22 @@ class NeutroPG_Callback_Handler {
             <?php
             die;
         }
+    }
+
+    /**
+     * update order status if the status has been changed
+     * @param WC_Order $order
+     * @param string $status
+     * @param string $note
+     */
+    private static function maybe_update_order_status($order, $status, $note) {
+        // do nothing if the status does not change
+        if ($order->get_status() == $status) {
+            return;
+        }
+
+        // update status
+        $order->update_status($status, $note);
     }
 
     public static function get_order_nonce($order_id) {
