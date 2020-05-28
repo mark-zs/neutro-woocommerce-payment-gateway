@@ -45,7 +45,7 @@ function nwpg_init_neutro_payment_gateway() {
          * @return bool
          */
         public function verify_order_payment($order_id) {
-            $endpoint = 'http://app1.neutro.financial/servlet/paymentStatus';
+            $endpoint = 'http://app.neutro.net/servlet/paymentStatus';
             $response = wp_remote_get($endpoint, array(
                 'body' => array(
                     // 'apiKey' => $this->api_key,
@@ -122,7 +122,7 @@ function nwpg_init_neutro_payment_gateway() {
                 // 'nonce' => $nonce,
             );
 
-            $endpoint = 'http://app1.neutro.financial/servlet/preparePayment';
+            $endpoint = 'http://app.neutro.net/servlet/preparePayment';
             $response = wp_remote_post($endpoint, array(
                 'body' => $post_data,
                 'timeout' => 15,
