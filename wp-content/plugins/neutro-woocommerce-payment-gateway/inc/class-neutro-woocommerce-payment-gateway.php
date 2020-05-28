@@ -190,7 +190,7 @@ function nwpg_init_neutro_payment_gateway() {
         public function payment_fields() {
             // $description = $this->get_description();
             $total = floatval(WC()->cart->get_cart_contents_total());
-            $tree_plan_count = floor($total / 10);
+            $tree_plan_count = floor($total * 4);
             echo wpautop(wptexturize(sprintf('Pay by Neutro and we will plant %s tree%s.', $tree_plan_count, $tree_plan_count > 1 ? 's' : '')));
 //            if ($description) {
 //                echo wpautop(wptexturize($description)); // @codingStandardsIgnoreLine.
