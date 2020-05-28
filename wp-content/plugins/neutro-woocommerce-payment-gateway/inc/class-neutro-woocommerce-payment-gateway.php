@@ -99,12 +99,23 @@ function nwpg_init_neutro_payment_gateway() {
 
             // $nonce = NeutroPG_Callback_Handler::get_order_nonce($order_id);
 
+            $item_count = $order->get_item_count();
+            $desc = sprintf('%1$s item%2$s: ', $item_count, $item_count > 1 ? 's' : '');
+            $is_first = true;
+            foreach ($order->get_items() as $item_id => $item) {
+                $item_data = $item->get_data();
+                $desc .= $is_first ? '' : ', ';
+                $desc .= sprintf('%1$s (ID: %2$s)', $item->get_name(), $item_data['product_id']);
+                $is_first = false;
+            }
+            // var_dump($desc); die;
+
             $post_data = array(
                 'apiKey' => $this->api_key,
                 'amount' => $order->get_total(),
                 'currency' => $order->get_currency(),
                 'userID' => is_user_logged_in() ? get_current_user_id() : '',
-                'transactionDesc' => '',
+                'transactionDesc' => $desc,
                 'transactionRef' => $order_id,
                 'merchantTransactionId' => $order_id,
                 'callbackUrl' => add_query_arg(array('neutro_payment' => true), home_url()),
