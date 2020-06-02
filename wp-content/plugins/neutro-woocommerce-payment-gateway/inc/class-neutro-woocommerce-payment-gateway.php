@@ -46,13 +46,19 @@ function nwpg_init_neutro_payment_gateway() {
          */
         public function verify_order_payment($order_id) {
             $endpoint = 'https://app.neutro.net/servlet/paymentStatus';
-            $response = wp_remote_get($endpoint, array(
+
+            $nwpg_request_args = array(
                 'body' => array(
                     // 'apiKey' => $this->api_key,
                     'neutroSinglePaymentId' => get_post_meta($order_id, '_neutroSinglePaymentId', true),
                 ),
                 'timeout' => 15,
-            ));
+                'sslverify' => false,
+            );
+
+            $nwpg_request_args = apply_filters('nwpg_request_args', $nwpg_request_args, $endpoint, $order_id);
+
+            $response = wp_remote_get($endpoint, $nwpg_request_args);
 
             // var_dump($response); die;
             if (!isset($response['response']) || $response['response']['code'] != 200) {
@@ -123,10 +129,16 @@ function nwpg_init_neutro_payment_gateway() {
             );
 
             $endpoint = 'https://app.neutro.net/servlet/preparePayment';
-            $response = wp_remote_post($endpoint, array(
+
+            $nwpg_request_args = array(
                 'body' => $post_data,
                 'timeout' => 15,
-            ));
+                'sslverify' => false,
+            );
+
+            $nwpg_request_args = apply_filters('nwpg_request_args', $nwpg_request_args, $endpoint, $order_id);
+
+            $response = wp_remote_post($endpoint, $nwpg_request_args);
 
             // var_dump($response); die;
             // something wrong
