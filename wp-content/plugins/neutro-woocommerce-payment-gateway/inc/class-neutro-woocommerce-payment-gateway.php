@@ -233,14 +233,14 @@ function nwpg_init_neutro_payment_gateway() {
                     'desc_tip' => true,
                     // 'css' => 'border:none;pointer-events:none',
                 ),
-//                'description' => array(
-//                    'title' => __('Description', 'woocommerce'),
-//                    'type' => 'textarea',
-//                    'description' => __('Payment method description that the customer will see on your checkout.', 'woocommerce'),
-//                    'default' => $this->method_description,
-//                    'desc_tip' => true,
-//                    // 'css' => 'border:none;pointer-events:none',
-//                ),
+                'description' => array(
+                    'title' => __('Description', 'woocommerce'),
+                    'type' => 'textarea',
+                    'description' => __('Payment method description that the customer will see on your checkout.', 'woocommerce'),
+                    'default' => $this->method_description,
+                    'desc_tip' => true,
+                    // 'css' => 'border:none;pointer-events:none',
+                ),
                 'instructions' => array(
                     'title' => __('Instructions', 'woocommerce'),
                     'type' => 'textarea',
