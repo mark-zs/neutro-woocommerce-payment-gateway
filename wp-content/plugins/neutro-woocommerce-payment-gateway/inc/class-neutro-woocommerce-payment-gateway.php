@@ -203,7 +203,7 @@ function nwpg_init_neutro_payment_gateway() {
             // $description = $this->get_description();
             $total = floatval(WC()->cart->get_cart_contents_total());
             $tree_plan_count = round($total * 5 / 100);
-            echo wpautop(wptexturize(sprintf('Pay by Neutro and we will plant%s trees.', $tree_plan_count > 1 ? ' '.$tree_plan_count : '')));
+            echo wpautop(wptexturize(sprintf('Pay quickly and securely directly from your bank, and Neutro will donate 1% to carbon-offset your purchase.')));
 //            if ($description) {
 //                echo wpautop(wptexturize($description)); // @codingStandardsIgnoreLine.
 //            }
