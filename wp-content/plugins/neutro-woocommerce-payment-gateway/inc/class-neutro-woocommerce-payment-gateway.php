@@ -208,6 +208,8 @@ function nwpg_init_neutro_payment_gateway() {
             $description = str_replace('{tree_count}', $tree_plan_count, $description);
             if ($description) {
                 echo wpautop(wptexturize($description)); // @codingStandardsIgnoreLine.
+            } else {
+                echo wpautop(wptexturize('Pay quickly and securely directly from your bank, and Neutro will donate 1% to carbon-offset your purchase!')); // @codingStandardsIgnoreLine.
             }
 
             if ($this->supports('default_credit_card_form')) {
