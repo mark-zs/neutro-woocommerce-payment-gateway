@@ -239,7 +239,7 @@ function nwpg_init_neutro_payment_gateway() {
                 'description' => array(
                     'title' => __('Description', 'woocommerce'),
                     'type' => 'textarea',
-                    'description' => __('Payment method description that the customer will see on your checkout.', 'woocommerce'),
+                    'description' => __('Payment method description that the customer will see when selecting Neutro upon checkout. You may optionally include the phrase {tree_count} which will be replaced by number of trees to be donated. If blank, a friendly default message is presented.', 'woocommerce'),
                     'default' => $this->method_description,
                     'desc_tip' => true,
                     // 'css' => 'border:none;pointer-events:none',
