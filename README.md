@@ -1,5 +1,7 @@
 # neutro-woocommerce-payment-gateway
-Neutro WooCommerce payment gateway plugin
+Neutro WooCommerce payment gateway plugin.
+In order to connect to the Neutro payment gateway you will need an API Key. This you can get by applying at: https://app.neutro.net/#/merchant/new
+If you experience any problems, please contact Neutro at support@neutro.net
 
 # Development setup
 ```
