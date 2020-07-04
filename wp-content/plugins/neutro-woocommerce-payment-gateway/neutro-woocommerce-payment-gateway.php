@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Neutro WooCommerce payment gateway
  * Plugin URI:        https://www.neutro.net/
- * Description:       Neutro is an easy checkout option which has an impact on the world.
+ * Description:       Neutro is an easy checkout option which has an impact on the world. In order to use Nuetro as a payment gateway you will need to apply for an API at https://app.neutro.net/#/merchant/new.
  * Version:           1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
