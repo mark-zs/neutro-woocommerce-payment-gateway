@@ -7,9 +7,7 @@
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Neutro Ltd
- * Author URI:        https://www.neutro.net/
- * Developer:         Neutro Ltd
- * Developer URI:     https://www.neutro.net/
+ * Developer:         neutroltd
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       neutro-payments
