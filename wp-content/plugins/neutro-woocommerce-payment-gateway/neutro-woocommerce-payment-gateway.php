@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Neutro WooCommerce payment gateway
+ * Plugin Name:       Neutro payments
  * Plugin URI:        https://www.neutro.net/
  * Description:       Neutro is an easy checkout option which has an impact on the world.
  * Version:           0.9
@@ -12,7 +12,7 @@
  * Developer URI:     https://www.neutro.net/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       neutro-woocommerce-payment-gateway
+ * Text Domain:       neutro-payments
  * Domain Path:       /languages
  */
 
