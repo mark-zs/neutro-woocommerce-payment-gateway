@@ -8,8 +8,8 @@
  * Requires PHP:      7.2
  * Author:            Neutro Ltd
  * Developer:         neutroltd
- * License:           GPL v2 or later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * License:           GPL v3
+ * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:       neutro-payments
  * Domain Path:       /languages
  */
