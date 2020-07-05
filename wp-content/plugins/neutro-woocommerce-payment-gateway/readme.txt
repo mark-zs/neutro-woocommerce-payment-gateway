@@ -12,7 +12,9 @@ Neutro is an easy and cheap payment gateway that donates 1% to the environment
 
 == Installation ==
 Before you can use neutro you need to get an API key from https://app.neutro.net/#/merchant/new. Note that at first the API will work with a test bank. You will need to be confirmed before you can use the live Neutro payment gateway.
- 
+All payments done before confirmation will be from a mock NatWest account (no matter which bank you choose).
+For the mock NatWest bank account use '123456789012'.
+
 Once installed and activated on WordPress you need to go into your WooCommerce -> Settings -> Payments and click Manage next to Neutro.
 Here you should pace your API key
 
