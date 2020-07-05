@@ -3,7 +3,7 @@
  * Plugin Name:       Neutro WooCommerce payment gateway
  * Plugin URI:        https://www.neutro.net/
  * Description:       Neutro is an easy checkout option which has an impact on the world.
- * Version:           1.0.0
+ * Version:           0.9
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Neutro Ltd
