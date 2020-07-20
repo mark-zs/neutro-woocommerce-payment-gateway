@@ -39,12 +39,12 @@ class NeutroPG_Callback_Handler {
 //        if ($nonce != $order_nonce) {
 //            return;
 //        }
-        $input_neutroSinglePaymentId = isset($_GET['neutroSinglePaymentId']) ? sanitize_text_field($_GET['neutroSinglePaymentId']) : '';
-        $neutroSinglePaymentId = get_post_meta($order_id, '_neutroSinglePaymentId', true);
+        $input_neutroPaymentRequestId = isset($_GET['neutroPaymentRequestId']) ? sanitize_text_field($_GET['neutroPaymentRequestId']) : '';
+        $neutroPaymentRequestId = get_post_meta($order_id, '_neutroPaymentRequestId', true);
 
-        // var_dump($input_neutroSinglePaymentId, $neutroSinglePaymentId); die;
-        // $neutroSinglePaymentId does not match
-        if ($input_neutroSinglePaymentId != $neutroSinglePaymentId) {
+        // var_dump($input_neutroPaymentRequestId, $neutroPaymentRequestId); die;
+        // $neutroPaymentRequestId does not match
+        if ($input_neutroPaymentRequestId != $neutroPaymentRequestId) {
             return;
         }
 
@@ -62,7 +62,7 @@ class NeutroPG_Callback_Handler {
             return;
         }
 
-        $note = sprintf('neutroSinglePaymentId = %s. ', $neutroSinglePaymentId);
+        $note = sprintf('neutroPaymentRequestId = %s. ', $neutroPaymentRequestId);
 
         // successful
         if ($status == 'executed') {

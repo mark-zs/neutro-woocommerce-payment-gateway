@@ -50,7 +50,7 @@ function nwpg_init_neutro_payment_gateway() {
             $nwpg_request_args = array(
                 'body' => array(
                     // 'apiKey' => $this->api_key,
-                    'neutroSinglePaymentId' => get_post_meta($order_id, '_neutroSinglePaymentId', true),
+                    'neutroPaymentRequestId' => get_post_meta($order_id, '_neutroPaymentRequestId', true),
                 ),
                 'timeout' => 15,
                 'sslverify' => false,
@@ -152,8 +152,8 @@ function nwpg_init_neutro_payment_gateway() {
             $neutroPaymentRequestId = $response['neutroPaymentRequestId'];
             $startPaymentUrl = $response['startPaymentUrl'];
 
-            // link order with neutroSinglePaymentId
-            update_post_meta($order_id, '_neutroSinglePaymentId', $neutroPaymentRequestId);
+            // link order with neutroPaymentRequestId
+            update_post_meta($order_id, '_neutroPaymentRequestId', $neutroPaymentRequestId);
 
             return $startPaymentUrl;
         }

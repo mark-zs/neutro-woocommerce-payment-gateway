@@ -3,7 +3,7 @@
  * Plugin Name:       Neutro payments
  * Plugin URI:        https://www.neutro.net/
  * Description:       Neutro is an easy checkout option which has an impact on the world.
- * Version:           0.9
+ * Version:           0.9.1
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Neutro Ltd
