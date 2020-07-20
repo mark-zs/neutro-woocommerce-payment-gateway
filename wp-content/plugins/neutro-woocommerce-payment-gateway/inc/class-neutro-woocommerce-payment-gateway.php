@@ -128,7 +128,7 @@ function nwpg_init_neutro_payment_gateway() {
                 // 'nonce' => $nonce,
             );
 
-            $endpoint = 'https://app.neutro.net/servlet/preparePayment';
+            $endpoint = 'https://app.neutro.net/servlet/requestPayment';
 
             $nwpg_request_args = array(
                 'body' => $post_data,
@@ -149,13 +149,13 @@ function nwpg_init_neutro_payment_gateway() {
 
             $response = json_decode($response['body'], true);
             // var_dump($response); die;
-            $neutroSinglePaymentId = $response['neutroSinglePaymentId'];
-            $startPaymentRedirectUrl = $response['startPaymentRedirectUrl'];
+            $neutroPaymentRequestId = $response['neutroPaymentRequestId'];
+            $startPaymentUrl = $response['startPaymentUrl'];
 
             // link order with neutroSinglePaymentId
-            update_post_meta($order_id, '_neutroSinglePaymentId', $neutroSinglePaymentId);
+            update_post_meta($order_id, '_neutroSinglePaymentId', $neutroPaymentRequestId);
 
-            return $startPaymentRedirectUrl;
+            return $startPaymentUrl;
         }
 
         public function is_available() {
