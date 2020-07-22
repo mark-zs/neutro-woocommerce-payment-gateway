@@ -52,3 +52,9 @@ function nwpg_register_payment_gateway($gateways) {
 }
 
 add_filter('woocommerce_payment_gateways', 'nwpg_register_payment_gateway');
+add_filter( 'woocommerce_order_button_html', 'neutro_custom_button_text' );
+
+function neutro_custom_button_text( $button_html ) {
+    $button_html = str_replace( 'Place order', 'Pay with Neutro', $button_html );
+    return $button_html;
+}
