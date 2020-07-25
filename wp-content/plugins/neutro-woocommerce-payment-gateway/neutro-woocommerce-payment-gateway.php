@@ -52,9 +52,43 @@ function nwpg_register_payment_gateway($gateways) {
 }
 
 add_filter('woocommerce_payment_gateways', 'nwpg_register_payment_gateway');
-add_filter( 'woocommerce_order_button_html', 'neutro_custom_button_text' );
 
-function neutro_custom_button_text( $button_html ) {
-    $button_html = str_replace( 'Place order', 'Pay with Neutro', $button_html );
+function neutro_custom_button_text($button_html) {
+    // $button_html = str_replace( 'Place order', 'Pay with Neutro', $button_html );
+    $button_html = str_replace(' value="', 'data-pay-with-neutro="Pay with Neutro" value="', $button_html);
     return $button_html;
 }
+
+add_filter('woocommerce_order_button_html', 'neutro_custom_button_text');
+
+function neutro_scripts() {
+    // for checkout page only
+    if (!is_checkout()) {
+        return;
+    }
+    ?>
+    <script type="text/javascript" async defer>
+        (function ($) {
+            'use strict';
+
+            $(document).ready(function () {
+
+                $(document.body).on('payment_method_selected', function () {
+                    var paymentMethod = $('input[name="payment_method"]:checked').val();
+                    var $btnPlaceOrder = $('#place_order');
+                    // console.log(paymentMethod);
+                    if (paymentMethod === 'neutro') {
+                        console.log($btnPlaceOrder.attr('data-pay-with-neutro'));
+                        $btnPlaceOrder.text($btnPlaceOrder.attr('data-pay-with-neutro'));
+                    } else {
+                        $btnPlaceOrder.text($btnPlaceOrder.attr('data-value'));
+                    }
+                });
+            });
+
+        })(jQuery);
+    </script>
+    <?php
+}
+
+add_action('wp_footer', 'neutro_scripts');
