@@ -10,6 +10,7 @@ function nwpg_init_neutro_payment_gateway() {
         private $active_countries;
         private $active_for_subscription_products;
 
+        private static $dev = false;
         public static $base_api = 'https://app.neutro.net';
 
         /**
@@ -33,6 +34,12 @@ function nwpg_init_neutro_payment_gateway() {
             $this->api_key = $this->get_option('api_key');
             $this->active_countries = $this->get_option('active_countries');
             $this->active_for_subscription_products = $this->get_option('active_for_subscription_products');
+
+            // dev
+            if (self::$dev) {
+                self::$base_api = 'https://test.neutro.net';
+            }
+            self::$base_api = untrailingslashit(self::$base_api);
 
             // Actions.
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
@@ -142,7 +149,7 @@ function nwpg_init_neutro_payment_gateway() {
 
             $response = wp_remote_post($endpoint, $nwpg_request_args);
 
-            // var_dump($response); die;
+            // var_dump($post_data); var_dump($response); die;
             // something wrong
             if (!isset($response['response']) || $response['response']['code'] != 200) {
                 // var_dump($post_data, $response);
