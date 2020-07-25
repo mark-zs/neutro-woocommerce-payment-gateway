@@ -9,7 +9,9 @@ function nwpg_init_neutro_payment_gateway() {
         private $instructions;
         private $active_countries;
         private $active_for_subscription_products;
-        
+
+        public static $base_api = 'https://app.neutro.net';
+
         /**
          * Constructor for the gateway.
          */
@@ -19,11 +21,11 @@ function nwpg_init_neutro_payment_gateway() {
             $this->has_fields = true;
             $this->method_title = 'Neutro';
             $this->method_description = 'Neutro Payment Gateway';
-            
+
             // Load the settings.
             $this->init_form_fields();
             $this->init_settings();
-            
+
             // Define user set variables.
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
@@ -31,13 +33,13 @@ function nwpg_init_neutro_payment_gateway() {
             $this->api_key = $this->get_option('api_key');
             $this->active_countries = $this->get_option('active_countries');
             $this->active_for_subscription_products = $this->get_option('active_for_subscription_products');
-            
+
             // Actions.
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             // add_action('woocommerce_thankyou_neutro', array($this, 'thankyou_page'));
             // add_action('woocommerce_checkout_create_order', array($this, 'save_order_payment_gateway_details'), 10, 2);
         }
-        
+
         /**
          * verify the order payment
          * @param int $order_id
@@ -45,8 +47,8 @@ function nwpg_init_neutro_payment_gateway() {
          * @return bool
          */
         public function verify_order_payment($order_id) {
-            $endpoint = 'https://app.neutro.net/servlet/paymentStatus';
-            
+            $endpoint = sprintf('%s/servlet/paymentStatus', self::$base_api);
+
             $nwpg_request_args = array(
                 'body' => array(
                     // 'apiKey' => $this->api_key,
@@ -55,23 +57,23 @@ function nwpg_init_neutro_payment_gateway() {
                 'timeout' => 15,
                 'sslverify' => false,
             );
-            
+
             $nwpg_request_args = apply_filters('nwpg_request_args', $nwpg_request_args, $endpoint, $order_id);
-            
+
             $response = wp_remote_get($endpoint, $nwpg_request_args);
-            
+
             // var_dump($response); die;
             if (!isset($response['response']) || $response['response']['code'] != 200) {
                 // var_dump($post_data, $response);
                 return null;
             }
-            
+
             $response = json_decode($response['body'], true);
             // var_dump($response); die;
-            
+
             return $response['status'];
         }
-        
+
         /**
          * Process the payment and return the result.
          *
@@ -80,9 +82,9 @@ function nwpg_init_neutro_payment_gateway() {
          */
         public function process_payment($order_id) {
             // $order = wc_get_order($order_id);
-            
+
             $payment_url = $this->get_payment_url($order_id);
-            
+
             // success
             if ($payment_url) {
                 return array(
@@ -90,10 +92,10 @@ function nwpg_init_neutro_payment_gateway() {
                     'redirect' => $payment_url,
                 );
             }
-            
+
             return parent::process_payment($order_id);
         }
-        
+
         /**
          * generate a payment url for the order
          * @param int $order_id
@@ -102,9 +104,9 @@ function nwpg_init_neutro_payment_gateway() {
          */
         private function get_payment_url($order_id) {
             $order = wc_get_order($order_id);
-            
+
             // $nonce = NeutroPG_Callback_Handler::get_order_nonce($order_id);
-            
+
             $item_count = $order->get_item_count();
             $desc = sprintf('%1$s item%2$s: ', $item_count, $item_count > 1 ? 's' : '');
             $is_first = true;
@@ -115,7 +117,7 @@ function nwpg_init_neutro_payment_gateway() {
                 $is_first = false;
             }
             // var_dump($desc); die;
-            
+
             $post_data = array(
                 'apiKey' => $this->api_key,
                 'amount' => $order->get_total(),
@@ -127,40 +129,40 @@ function nwpg_init_neutro_payment_gateway() {
                 'callbackUrl' => add_query_arg(array('neutro_payment' => true), home_url()),
                 // 'nonce' => $nonce,
             );
-            
-            $endpoint = 'https://app.neutro.net/servlet/requestPayment';
-            
+
+            $endpoint = sprintf('%s/servlet/requestPayment', self::$base_api);
+
             $nwpg_request_args = array(
                 'body' => $post_data,
                 'timeout' => 15,
                 'sslverify' => false,
             );
-            
+
             $nwpg_request_args = apply_filters('nwpg_request_args', $nwpg_request_args, $endpoint, $order_id);
-            
+
             $response = wp_remote_post($endpoint, $nwpg_request_args);
-            
+
             // var_dump($response); die;
             // something wrong
             if (!isset($response['response']) || $response['response']['code'] != 200) {
                 // var_dump($post_data, $response);
                 return null;
             }
-            
+
             $response = json_decode($response['body'], true);
             // var_dump($response); die;
             $neutroPaymentRequestId = $response['neutroPaymentRequestId'];
             $startPaymentUrl = $response['startPaymentUrl'];
-            
+
             // link order with neutroPaymentRequestId
             update_post_meta($order_id, '_neutroPaymentRequestId', $neutroPaymentRequestId);
-            
+
             return $startPaymentUrl;
         }
-        
+
         public function is_available() {
             $is_available = parent::is_available();
-            
+
             if (!is_admin()) {
                 // Pay with Neutro will only display if user is in appropriate country
                 if (is_array($this->active_countries) && !empty($this->active_countries)) {
@@ -170,10 +172,10 @@ function nwpg_init_neutro_payment_gateway() {
                     }
                 }
             }
-            
+
             return $is_available;
         }
-        
+
         public function supports($feature) {
             // subscriptions support
             if ($feature == 'subscriptions') {
@@ -181,10 +183,10 @@ function nwpg_init_neutro_payment_gateway() {
                     return true;
                 }
             }
-            
+
             return parent::supports($feature);
         }
-        
+
         /**
          * Validate frontend fields.
          *
@@ -195,7 +197,7 @@ function nwpg_init_neutro_payment_gateway() {
         public function validate_fields() {
             return true;
         }
-        
+
         /**
          * Output the "payment type" fields in checkout.
          */
@@ -211,12 +213,12 @@ function nwpg_init_neutro_payment_gateway() {
             } else {
                 echo wpautop(wptexturize('Pay quickly and securely directly from your bank, and Neutro will donate 1% to carbon-offset your purchase!')); // @codingStandardsIgnoreLine.
             }
-            
+
             if ($this->supports('default_credit_card_form')) {
                 $this->credit_card_form(); // Deprecated, will be removed in a future version.
             }
         }
-        
+
         /**
          * Initialise Gateway Settings Form Fields.
          */
@@ -268,14 +270,14 @@ function nwpg_init_neutro_payment_gateway() {
                 ),
             );
         }
-        
+
         public function generate_countries_dropdown_html($key, $value) {
             $allowed_countries = WC()->countries->get_shipping_countries();
             $shipping_continents = WC()->countries->get_shipping_continents();
-            
+
             $field_key = $this->get_field_key($key);
             $locations = $this->settings[$key];
-            
+
             ob_start();
             ?>
             <tr>
