@@ -10,7 +10,7 @@ function nwpg_init_neutro_payment_gateway() {
         private $active_countries;
         private $active_for_subscription_products;
 
-        private static $dev = false;
+        private static $dev = true;
         public static $base_api = 'https://app.neutro.net';
 
         /**
@@ -56,11 +56,16 @@ function nwpg_init_neutro_payment_gateway() {
         public function verify_order_payment($order_id) {
             $endpoint = sprintf('%s/servlet/paymentStatus', self::$base_api);
 
+            $neutroSinglePaymentId = isset($_GET['neutroSinglePaymentId']) ? sanitize_text_field($_GET['neutroSinglePaymentId']) : '';
+
+            $post_data = array(
+                // 'apiKey' => $this->api_key,
+                'neutroPaymentRequestId' => get_post_meta($order_id, '_neutroPaymentRequestId', true),
+                'neutroSinglePaymentId' => $neutroSinglePaymentId,
+            );
+
             $nwpg_request_args = array(
-                'body' => array(
-                    // 'apiKey' => $this->api_key,
-                    'neutroPaymentRequestId' => get_post_meta($order_id, '_neutroPaymentRequestId', true),
-                ),
+                'body' => $post_data,
                 'timeout' => 15,
                 'sslverify' => false,
             );
@@ -69,9 +74,11 @@ function nwpg_init_neutro_payment_gateway() {
 
             $response = wp_remote_get($endpoint, $nwpg_request_args);
 
-            // var_dump($response); die;
+//            var_dump($response);
+//            die;
             if (!isset($response['response']) || $response['response']['code'] != 200) {
-                // var_dump($post_data, $response);
+//                var_dump($post_data, $response);
+//                die;
                 return null;
             }
 
@@ -149,7 +156,9 @@ function nwpg_init_neutro_payment_gateway() {
 
             $response = wp_remote_post($endpoint, $nwpg_request_args);
 
-            // var_dump($post_data); var_dump($response); die;
+//            var_dump($post_data);
+//            var_dump($response['body']);
+//            die;
             // something wrong
             if (!isset($response['response']) || $response['response']['code'] != 200) {
                 // var_dump($post_data, $response);
@@ -157,7 +166,8 @@ function nwpg_init_neutro_payment_gateway() {
             }
 
             $response = json_decode($response['body'], true);
-            // var_dump($response); die;
+//            var_dump($response);
+//            die;
             $neutroPaymentRequestId = $response['neutroPaymentRequestId'];
             $startPaymentUrl = $response['startPaymentUrl'];
 
