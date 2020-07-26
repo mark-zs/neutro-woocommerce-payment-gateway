@@ -10,7 +10,7 @@ function nwpg_init_neutro_payment_gateway() {
         private $active_countries;
         private $active_for_subscription_products;
 
-        private static $dev = true;
+        private static $dev = false;
         public static $base_api = 'https://app.neutro.net';
 
         /**
