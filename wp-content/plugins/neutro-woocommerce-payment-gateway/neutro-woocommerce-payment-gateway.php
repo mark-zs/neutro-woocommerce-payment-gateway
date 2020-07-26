@@ -72,17 +72,24 @@ function neutro_scripts() {
             'use strict';
 
             $(document).ready(function () {
-
-                $(document.body).on('payment_method_selected', function () {
+                function correctBtnText() {
                     var paymentMethod = $('input[name="payment_method"]:checked').val();
                     var $btnPlaceOrder = $('#place_order');
                     // console.log(paymentMethod);
                     if (paymentMethod === 'neutro') {
-                        console.log($btnPlaceOrder.attr('data-pay-with-neutro'));
+                        // console.log($btnPlaceOrder.attr('data-pay-with-neutro'));
                         $btnPlaceOrder.text($btnPlaceOrder.attr('data-pay-with-neutro'));
                     } else {
                         $btnPlaceOrder.text($btnPlaceOrder.attr('data-value'));
                     }
+                }
+
+                $(document.body).on('updated_checkout', function () {
+                    correctBtnText();
+                });
+
+                $(document.body).on('payment_method_selected', function () {
+                    correctBtnText();
                 });
             });
 
