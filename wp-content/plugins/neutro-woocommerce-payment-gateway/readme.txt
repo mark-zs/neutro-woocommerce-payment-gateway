@@ -2,7 +2,7 @@
 Contributors: neutroltd
 Tags: neutro, payment, environmental, donations, gateway, payment gateway
 Requires at least: 5.2
-Tested up to: 5.4.2
+Tested up to: 5.5
 Requires PHP: 7.2
 Stable tag: 1.0.1
 License: GPLv3
